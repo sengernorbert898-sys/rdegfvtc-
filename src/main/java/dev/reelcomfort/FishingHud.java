@@ -63,3 +63,67 @@ public final class FishingHud {
 		}
 		if (cfg.showBites) {
 			lines.add(new Line(String.format(Locale.ROOT, "Casts: %d  Bites: %d  Reeled: %d",
+					session.casts, session.bites, session.reeled), 0xFFE0E0E0));
+		}
+		if (cfg.showWait) {
+			double wait = session.avgWaitSeconds();
+			lines.add(new Line("Avg wait: " + (wait < 0 ? "--" : String.format(Locale.ROOT, "%.1fs", wait)),
+					0xFFE0E0E0));
+		}
+		if (cfg.showExpected) {
+			double ideal = session.expectedBitesPerHourIdeal();
+			double real = session.expectedBitesPerHourRealistic(cfg);
+			lines.add(new Line("Expected bites/h: "
+					+ (real < 0 ? "--" : String.format(Locale.ROOT, "%.0f", real)), 0xFF8CFF8C));
+			if (ideal >= 0) {
+				lines.add(new Line(String.format(Locale.ROOT, "  (%.0f/h if you reel instantly)", ideal),
+						0xFF9A9A9A));
+			}
+		}
+		if (cfg.showReaction) {
+			double react = session.avgReactionSeconds();
+			lines.add(new Line("Avg reaction: " + (react < 0 ? "--" : String.format(Locale.ROOT, "%.2fs", react)),
+					0xFFE0E0E0));
+		}
+
+		if (cfg.durabilityWarning && rod != null && rod.isDamageableItem()) {
+			int remaining = rod.getMaxDamage() - rod.getDamageValue();
+			if (remaining <= cfg.durabilityWarnUses) {
+				lines.add(new Line("§lROD LOW: " + remaining + " uses left", 0xFFFF5555));
+			}
+		}
+
+		int width = 0;
+		for (Line line : lines) {
+			width = Math.max(width, font.width(line.text()));
+		}
+		int boxW = width + PAD * 2;
+		int boxH = lines.size() * LINE_HEIGHT + PAD * 2 - 2;
+
+		int x = cfg.hudAnchor.endsWith("right") ? screenW - boxW - cfg.hudOffsetX : cfg.hudOffsetX;
+		int y = cfg.hudAnchor.startsWith("bottom") ? screenH - boxH - cfg.hudOffsetY : cfg.hudOffsetY;
+
+		if (cfg.hudBackground) {
+			graphics.fill(x, y, x + boxW, y + boxH, 0x90000000);
+		}
+		int ty = y + PAD;
+		for (Line line : lines) {
+			graphics.text(font, line.text(), x + PAD, ty, line.color(), true);
+			ty += LINE_HEIGHT;
+		}
+	}
+
+	private static ItemStack heldRod(LocalPlayer player) {
+		ItemStack main = player.getMainHandItem();
+		if (main.is(Items.FISHING_ROD)) {
+			return main;
+		}
+		ItemStack off = player.getOffhandItem();
+		return off.is(Items.FISHING_ROD) ? off : null;
+	}
+
+	private static String formatTime(double seconds) {
+		int total = (int) seconds;
+		return String.format(Locale.ROOT, "%d:%02d", total / 60, total % 60);
+	}
+}
