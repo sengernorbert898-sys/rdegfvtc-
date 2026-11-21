@@ -28,7 +28,7 @@ public final class FishingHud {
 		LocalPlayer player = mc.player;
 		ReelComfortConfig cfg = ReelComfortClient.config;
 		FishingSession session = ReelComfortClient.SESSION;
-		if (player == null || mc.options.hudHidden || cfg == null) {
+		if (player == null || minecraft.options.hideGui || cfg == null) {
 			return;
 		}
 
