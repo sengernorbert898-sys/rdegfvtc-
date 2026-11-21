@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "reelcomfort",
+	"version": "${version}",
+	"name": "Reel Comfort",
+	"description": "Client-side fishing quality of life: bite alerts, session stats, expected bites per hour and a bobber marker ring. No auto-fishing.",
+	"authors": [
+		"Reel Comfort contributors"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/reel-comfort"
+	},
+	"license": "MIT",
+	"icon": "assets/reelcomfort/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"dev.reelcomfort.ReelComfortClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
